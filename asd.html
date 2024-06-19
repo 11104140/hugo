@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Whack-A-Mole Game</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+        .game-container {
+            display: grid;
+            grid-template-columns: repeat(3, 100px);
+            grid-gap: 10px;
+        }
+        .hole {
+            width: 100px;
+            height: 100px;
+            background-color: #8B4513;
+            border-radius: 50%;
+            position: relative;
+        }
+        .mole {
+            width: 80px;
+            height: 80px;
+            background-color: #DAA520;
+            border-radius: 50%;
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+        <div class="hole"><div class="mole"></div></div>
+    </div>
+    <script>
+        const holes = document.querySelectorAll('.hole');
+        const moles = document.querySelectorAll('.mole');
+        let score = 0;
+        let lastHole;
+        let timeUp = false;
+
+        function randomTime(min, max) {
+            return Math.round(Math.random() * (max - min) + min);
+        }
+
+        function randomHole(holes) {
+            const idx = Math.floor(Math.random() * holes.length);
+            const hole = holes[idx];
+            if (hole === lastHole) {
+                return randomHole(holes);
+            }
+            lastHole = hole;
+            return hole;
+        }
+
+        function peep() {
+            const time = randomTime(200, 1000);
+            const hole = randomHole(holes);
+            const mole = hole.querySelector('.mole');
+            mole.style.display = 'block';
+            setTimeout(() => {
+                mole.style.display = 'none';
+                if (!timeUp) peep();
+            }, time);
+        }
+
+        function startGame() {
+            score = 0;
+            timeUp = false;
+            peep();
+            setTimeout(() => timeUp = true, 10000); // Game lasts 10 seconds
+        }
+
+        function whack(e) {
+            if (!e.isTrusted) return; // Fake click
+            score++;
+            this.style.display = 'none';
+            console.log(score); // For debugging purposes, you can display the score on the screen instead
+        }
+
+        moles.forEach(mole => mole.addEventListener('click', whack));
+
+        startGame();
+    </script>
+</body>
+</html>
